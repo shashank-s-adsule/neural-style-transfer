@@ -4,7 +4,7 @@ import cv2
 import torch, torch.nn as nn
 import torchvision
 
-from model import VGG
+from model.VGG import VGG16
 
 def argument():
     arg=argparse.ArgumentParser()

@@ -95,7 +95,7 @@ if __name__=="__main__":
     # for checking and debuging
     img=torch.randn(1,3,640,640)
     while True:
-        n=int(input("enter the choices\n1. for checkding VGG16\n2. checking VGG19\n3. exit\n"))
+        n=int(input("enter the choices\n1. for checking VGG16\n2. for checking VGG19\n3. exit\n"))
         os.system("cls" if os.name=="nt" else "clear")
         match n:
             case 1:
