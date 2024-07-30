@@ -30,8 +30,7 @@ class VGG16(nn.Module):
         # freeze all layers 
         if not required_grad:
             for p in self.parameters(): 
-                p.requires_grad=False
-
+                p.requires_grad=False0
 
     def forward(self,x):
         x=self.slice_1(x)
@@ -48,10 +47,10 @@ class VGG16(nn.Module):
 # remaining 
 class VGG19(nn.Module):
     def __init__(self,required_grad=False,show_progress=False):
-        super(VGG16,self).__init__()
+        super(VGG19,self).__init__()
         self.backbone=models.vgg19(pretrained=True,progress=show_progress).features                  # pretrained backbone of VGG19
         self.content_feature_maps_idx=1                                                              # feature map index for content images
-        self.style_feature_maps_idx=list(range(len(self.layers_name)))                               # feature map index for style images
+        self.style_feature_maps_idx=list(range(5))                                                   # feature map index for style images
 
         # create slice node for extracting feature maps 
         self.slice_1=nn.Sequential()
@@ -65,16 +64,17 @@ class VGG19(nn.Module):
             self.slice_1.add_module(str(i),self.backbone[i])
         for i in range(4,9):
             self.slice_2.add_module(str(i),self.backbone[i])
-        for i in range(9,16):
+        for i in range(9,18):
             self.slice_3.add_module(str(i),self.backbone[i])
-        for i in range(16,23):
+        for i in range(18,27):
             self.slice_4.add_module(str(i),self.backbone[i])
+        for i in range(27,36):
+            self.slice_5.add_module(str(i),self.backbone[i])
 
         # freeze all layers
         if not required_grad:
             for p in self.parameters(): 
                 p.requires_grad=False
-
 
     def forward(self,x):
         x=self.slice_1(x)
@@ -82,10 +82,12 @@ class VGG19(nn.Module):
         x=self.slice_2(x)
         relu2_2=x
         x=self.slice_3(x)
-        relu3_3=x
+        relu3_4=x
         x=self.slice_4(x)
-        relu4_3=x
-        out_feature={"relu1_2":relu1_2,"relu2_2":relu2_2,"relu3_3":relu3_3,"relu4_3":relu4_3}
+        relu4_4=x
+        x=self.slice_5(x)
+        relu5_4=x
+        out_feature={"relu1_2":relu1_2,"relu2_2":relu2_2,"relu3_4":relu3_4,"relu4_4":relu4_4,"relu5_4":relu5_4}
         return out_feature
 
 
@@ -102,7 +104,10 @@ if __name__=="__main__":
                 for key,val in pred.items():
                     print(f" \u001b[1;33m{key}\u001b[0m: {val.shape}")
             case 2:
-                pass
+                m=VGG19()
+                pred=m(img)
+                for key,val in pred.items():
+                    print(f" \u001b[1;33m{key}\u001b[0m: {val.shape}")
             case 3:
                 break
             case _:
