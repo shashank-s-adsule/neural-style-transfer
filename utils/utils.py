@@ -39,6 +39,14 @@ def preprocess(path,resize=None,device="cpu"):
     return preprocess_img
 
 
+def save_image(img,img_path):
+    if(img.shape==2):
+        img=np.stack((img)*3,axis=-1)
+    cv2.imwrite(img_path,img)
+
+
+
+
 if __name__=="__main__":
     # for debuging
     img_path=r"c:\Users\Shashank\Downloads\grayscale-image.jpg"
