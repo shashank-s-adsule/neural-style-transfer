@@ -5,6 +5,7 @@ import torch, torch.nn as nn
 import torchvision
 
 from model.VGG import VGG16
+from utils import preprocess
 
 def argument():
 
