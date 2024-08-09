@@ -30,7 +30,7 @@ class VGG16(nn.Module):
         # freeze all layers 
         if not required_grad:
             for p in self.parameters(): 
-                p.requires_grad=False0
+                p.requires_grad=False
 
     def forward(self,x):
         x=self.slice_1(x)
@@ -92,6 +92,7 @@ class VGG19(nn.Module):
 
 
 if __name__=="__main__":
+    os.system("cls" if os.name=="nt" else "clear")
     # for checking and debuging
     img=torch.randn(1,3,640,640)
     while True:
@@ -99,21 +100,22 @@ if __name__=="__main__":
         os.system("cls" if os.name=="nt" else "clear")
         match n:
             case 1:
-                m=VGG16()
+                m=VGG16()       
                 pred=m(img)
-                for key,val in pred.items():
-                    print(f" \u001b[1;33m{key}\u001b[0m: {val.shape}")
             case 2:
                 m=VGG19()
                 pred=m(img)
-                for key,val in pred.items():
-                    print(f" \u001b[1;33m{key}\u001b[0m: {val.shape}")
             case 3:
-                break
+                exit(1)
             case _:
                 print("\u001b[1;34m[\u001b[1;31mERROR\u001b[1;34m]\u001b[1;31m:\u001b[0m invalid input")
                 exit(1)
+        
+        # for checking image shape after each slice-convolution  
+        for key,val in pred.items():
+            print(f" \u001b[1;33m{key}\u001b[0m: {val.shape}")
 
-        exit_code=input("press 'back' or '<' to go previous step")
+        # for going back to previous step 
+        exit_code=input("press 'back' or '<' to go previous step: ")
         if exit_code not in ["back","<"]: break
         os.system("cls" if os.name=="nt" else "clear")
