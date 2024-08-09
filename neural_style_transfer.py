@@ -7,6 +7,7 @@ import torchvision
 from model.VGG import VGG16
 
 def argument():
+
     arg=argparse.ArgumentParser()
     arg.add_argument("--c_image",type=str,default="D:\\shashank\\test code\\test_repo\\neural-style-transfer\\data\\dataset\\content\\TamilContentImages\\C_image2.jpg",help="path for content image")
     arg.add_argument("--s_image",type=str,default="D:\\shashank\\test code\\test_repo\\neural-style-transfer\\data\\dataset\\styles\\Artworks\\423786.jpg",help="path for style image")
