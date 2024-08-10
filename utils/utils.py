@@ -14,7 +14,7 @@ def preprocess(path,resize=None,device="cpu"):
        raise Exception(f"image path does not exists: \u001b[1;33m{path}\u001b[0m")
 
     img=cv2.imread(path)
-    img=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)      #convert BGR->RGB  [can also use img[:,:,::-1]]
+    # img=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)      #convert BGR->RGB  [can also use img[:,:,::-1]]
 
     # resize section
     if resize is not None:  
@@ -43,6 +43,9 @@ def save_image(img,img_path):
     if(img.shape==2):
         img=np.stack((img)*3,axis=-1)
     cv2.imwrite(img_path,img)
+
+def gernate_out_image_name(args):
+    
 
 
 
