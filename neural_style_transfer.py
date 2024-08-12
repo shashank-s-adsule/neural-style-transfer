@@ -29,7 +29,8 @@ class NST:
         print(f"\u001b[1;32mimage dimmesion: \u001b[0m{s_img.shape[0]} X {s_img.shape[1]}")
         
     def nst_image(self,model_name):
-        model=prepare_model("vgg161")()
+        model=prepare_model("vgg16")()
+        model=model.to(self.device)
 
         print(model)
 
