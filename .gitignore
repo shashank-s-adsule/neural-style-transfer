@@ -1,2 +1,5 @@
 # to ingore all pycache files
 **__pycache__
+
+# temp files
+tempCodeRunnerFile.*
