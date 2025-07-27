@@ -5,14 +5,17 @@ import torch, torch.nn as nn
 import torchvision
 
 from model import * 
-# from utils import preprocess
+from utils import preprocess, prepare_model
 
 class NST:
     def __init__(self,args):
         self.content_img_path=args.c_image
         self.style_img_path=args.s_image
-        self.device="cuda" if torch.cuda.is_available() else "cpu"
-    
+        self.DEVICE="cuda" if torch.cuda.is_available() else "cpu"
+        # temp image
+        if "img" not in os.listdir("./temp"): os.makedirs("./temp/img")
+        self.out_img_name=f"combine_{os.path.splitext(os.path.basename(self.content_img_path))[0]}_AND_{os.path.basename(self.style_img_path)}"
+
     def metadata(self):
         print(f"{'Metadata about input images':-^60}")
         
@@ -29,11 +32,28 @@ class NST:
         print(f"\u001b[1;32mimage dimmesion: \u001b[0m{s_img.shape[0]} X {s_img.shape[1]}")
         
     def nst_image(self,model_name):
-        model=prepare_model("vgg16")()
-        model=model.to(self.device)
+        # content and style image load
+        cimg=preprocess(self.content_img_path,None,self.DEVICE)
+        simg=preprocess(self.style_img_path,None,self.DEVICE)
 
-        print(model)
+        # Model load
+        model=Load_model("vgg16")()
+        model=model.to(self.DEVICE)
 
+        model,content_feature_maps_index_name, style_feature_maps_indices_name= prepare_model(model)
+        
+
+        # print(model)
+
+    def TEST(self):
+        model=Load_model("vgg16")()
+        model=model.to(self.DEVICE)
+
+        a,b,c=prepare_model(model)
+
+        print(b,c)
+
+        pass
 
 
 def argument():
@@ -48,7 +68,13 @@ def argument():
 if __name__=="__main__":
     args=argument()
 
+    if "temp" not in os.listdir(): os.makedirs("temp")
+
     obj=NST(args)
     # obj.metadata()
-    obj.nst_image("anc")
+    
+    # obj.nst_image("anc")
+
+    obj.TEST()
+
     

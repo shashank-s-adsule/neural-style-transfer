@@ -8,8 +8,9 @@ class VGG16(nn.Module):
     def __init__(self,required_grad=False,show_progress=False):
         super(VGG16,self).__init__()
         self.backbone=models.vgg16(pretrained=True,progress=show_progress).features         # pretrained backbone of VGG16
-        self.content_feature_maps_idx=1                                                     # feature map index for content images
-        self.style_feature_maps_idx=list(range(4))                                          # feature map index for style images 
+        self.layer_names = ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3']
+        self.content_feature_maps_index=1                                                     # feature map index for content images
+        self.style_feature_maps_indices=list(range(4))                                          # feature map index for style images 
 
         # create slice node for extracting feature maps 
         self.slice_1=nn.Sequential()
@@ -44,13 +45,19 @@ class VGG16(nn.Module):
         out_feature={"relu1_2":relu1_2,"relu2_2":relu2_2,"relu3_3":relu3_3,"relu4_3":relu4_3}
         return out_feature
 
-# remaining 
 class VGG19(nn.Module):
-    def __init__(self,required_grad=False,show_progress=False):
+    def __init__(self,use_relu=True,required_grad=False,show_progress=False):
         super(VGG19,self).__init__()
         self.backbone=models.vgg19(pretrained=True,progress=show_progress).features                  # pretrained backbone of VGG19
-        self.content_feature_maps_idx=1                                                              # feature map index for content images
-        self.style_feature_maps_idx=list(range(5))                                                   # feature map index for style images
+        if use_relu:
+            self.layer_name=['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'conv4_2', 'relu5_1']
+            self.offset=1
+        else:
+            self.layer_name=['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv4_2', 'conv5_1']
+            self.offset=0
+
+        self.content_feature_maps_index=4                                                              # feature map index for content images
+        self.style_feature_maps_indices=list(range(6))                                                 # feature map index for style images
 
         # create slice node for extracting feature maps 
         self.slice_1=nn.Sequential()
@@ -58,18 +65,21 @@ class VGG19(nn.Module):
         self.slice_3=nn.Sequential()
         self.slice_4=nn.Sequential()
         self.slice_5=nn.Sequential()
+        self.slice_6=nn.Sequential()
 
         # add pretrained layer from backbone
-        for i in range(4):
+        for i in range(1+self.offset):
             self.slice_1.add_module(str(i),self.backbone[i])
-        for i in range(4,9):
+        for i in range(1+self.offset,6+self.offset):
             self.slice_2.add_module(str(i),self.backbone[i])
-        for i in range(9,18):
+        for i in range(6+self.offset,11+self.offset):
             self.slice_3.add_module(str(i),self.backbone[i])
-        for i in range(18,27):
+        for i in range(11+self.offset,20+self.offset):
             self.slice_4.add_module(str(i),self.backbone[i])
-        for i in range(27,36):
+        for i in range(20+self.offset,22):
             self.slice_5.add_module(str(i),self.backbone[i])
+        for i in range(22,29+self.offset):
+            self.slice_6.add_module(str(i),self.backbone[i])
 
         # freeze all layers
         if not required_grad:
@@ -78,16 +88,18 @@ class VGG19(nn.Module):
 
     def forward(self,x):
         x=self.slice_1(x)
-        relu1_2=x
+        layer1_1=x
         x=self.slice_2(x)
-        relu2_2=x
+        layer2_1=x
         x=self.slice_3(x)
-        relu3_4=x
+        layer3_1=x
         x=self.slice_4(x)
-        relu4_4=x
+        layer4_1=x
         x=self.slice_5(x)
-        relu5_4=x
-        out_feature={"relu1_2":relu1_2,"relu2_2":relu2_2,"relu3_4":relu3_4,"relu4_4":relu4_4,"relu5_4":relu5_4}
+        conv4_2=x
+        x=self.slice_6(x)
+        layer5_1=x
+        out_feature={"relu1_1":layer1_1,"relu2_1":layer2_1,"relu3_1":layer3_1,"relu4_1":layer4_1,"conv4_2":conv4_2,"relu5_1":layer5_1}
         return out_feature
 
 

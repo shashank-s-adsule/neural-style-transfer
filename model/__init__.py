@@ -1,9 +1,9 @@
 from .VGG import VGG19, VGG16
-__all__=["prepare_model"]
+__all__=["Load_model"]
 
 model_list={"vgg16":VGG16,"vgg19":VGG19}
 
-def prepare_model(model_name):
+def Load_model(model_name):
     model_name=model_name.lower()
     if(model_name in model_list.keys()): return model_list[model_name]
     else:
