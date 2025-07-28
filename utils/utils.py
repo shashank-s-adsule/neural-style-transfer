@@ -9,7 +9,7 @@ from torchvision import transforms
 IMAGENET_MEAN_255 = [123.675, 116.28, 103.53]
 IMAGENET_STD_NEUTRAL = [1, 1, 1]
 
-def preprocess(path,resize=None,device="cuda"):
+def preprocess(path,resize=None,device="cpu"):
     if not os.path.exists(path):
        raise Exception(f"image path does not exists: \u001b[1;33m{path}\u001b[0m")
 
