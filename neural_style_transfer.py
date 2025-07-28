@@ -8,7 +8,7 @@ from torch.autograd import Variable
 import torchvision
 
 from model import * 
-from utils import preprocess, prepare_model, gram_matrix
+from utils import preprocess, prepare_model, gram_matrix, total_variation
 
 class NST:
     def __init__(self,args):
@@ -38,20 +38,43 @@ class NST:
         print(f"\u001b[1;33mModel:\u001b[0m\t{args.model}")
         print(f"\u001b[1;33mDevice:\u001b[0m\t{self.DEVICE}")
 
-    def built_loss(self,model, optimizing_img, target_representations, content_feature_maps_index, style_feature_maps_indices):
+    def build_loss(self,model, optimizing_img, target_representations, content_feature_index_name, style_feature_maps_indices_names):
         target_content_representation = target_representations[0]
         target_style_representation = target_representations[1]
 
         current_set_of_feature_maps = model(optimizing_img)
 
-        print(current_set_of_feature_maps)
+        # print(current_set_of_feature_maps.keys())
 
-        # current_content_representation = current_set_of_feature_maps[content_feature_maps_index].squeeze(axis=0)
-        # content_loss = torch.nn.MSELoss(reduction='mean')(target_content_representation, current_content_representation)
+        current_content_representation = current_set_of_feature_maps[content_feature_index_name].squeeze(axis=0)
+        content_loss = torch.nn.MSELoss(reduction='mean')(target_content_representation, current_content_representation)
 
-    def make_turning_step(self,model,optmizer,target_representations, content_feature_maps_index, style_feature_maps_indices):
+        # print(current_content_representation.shape)
+
+        style_loss=0.0
+        current_style_representation=[gram_matrix(current_set_of_feature_maps[layer_name]) for  layer_name in current_set_of_feature_maps if layer_name in style_feature_maps_indices_names]
+
+        # print(len(current_style_representation))
+
+        for gram_gt,gram_hat in zip(target_style_representation,current_style_representation):
+            style_loss+=torch.nn.MSELoss(reduction='sum')(gram_gt[0],gram_hat[0])
+        style_loss/=len(target_style_representation)
+
+        # print(style_loss) 
+        tv_loss = total_variation(optimizing_img)
+
+        total_loss=args.content_weight*content_loss+args.style_weight*style_loss+args.tv_weight*tv_loss
+        return total_loss,content_loss,style_loss,tv_loss
+
+    def make_turning_step(self,model,optmizer,target_representations, content_feature_index_name, style_feature_maps_indices_name):
         def tuning_step(optimizing_img):
-            total_loss,content_loss,style_loss,tv_loss=self.build_loss()
+            total_loss,content_loss,style_loss,tv_loss=self.build_loss(model,optimizing_img,target_representations,content_feature_index_name,style_feature_maps_indices_name)
+            # computer gradiants
+            tv_loss.backward()
+            # update parmeters and zeros gradients
+            optmizer.step()
+            optmizer.zero_grad()
+            return total_loss,content_loss,style_loss,tv_loss
         return tuning_step
 
 
@@ -107,10 +130,14 @@ class NST:
         num_iter={"adam":3000,"lbfgs":1000}
         
         # ## optimizatino process start
-        # if args.optimizer=="adam":
-        #     optimizer=Adam((optimizing_img,),lr=1e1)
-        #     turning_step=
-
+        if args.optimizer=="adam":
+            optimizer=Adam((optimizing_img,),lr=1e1)
+            turning_step=self.make_turning_step(model,optimizer,target_representations,content_feature_maps_index_name[1],style_feature_maps_indices_name[1])
+            for i in range(num_iter[args.optimizer]):
+                total_loss,content_loss,style_loss,tv_loss=turning_step(optimizing_img)
+                with torch.no_grad():
+                    print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34miteration: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    
 
     def TEST(self):
         
@@ -128,7 +155,8 @@ def argument():
     arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
     arg.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=1e0)
 
-    arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")
+    arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="adam")
+    # arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")
     arg.add_argument("--model",type=str,default="vgg16",help="default model for NST")
     arg.add_argument("--init_method",type=str,choices=["random","content","style"],default="content",help="...")
     arg.add_argument("--saving_freq", type=int, help="saving frequency for intermediate images (-1 means only final)", default=-1)
