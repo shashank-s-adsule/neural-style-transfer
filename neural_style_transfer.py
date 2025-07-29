@@ -17,7 +17,7 @@ class NST:
         self.DEVICE="cuda" if torch.cuda.is_available() else "cpu"
         # temp image
         if "img" not in os.listdir("./temp"): os.makedirs("./temp/img")
-        self.out_img_name=f"combine_{os.path.splitext(os.path.basename(self.content_img_path))[0]}_AND_{os.path.basename(self.style_img_path)}"
+        self.out_img_name=f"{args.optimizer[0]+args.model[-2:]}_{os.path.splitext(os.path.basename(self.content_img_path))[0]}_AND_{os.path.basename(self.style_img_path)}"
 
     def metadata(self):
         
@@ -37,6 +37,7 @@ class NST:
         print(f"\u001b[1;35m{'Metadata about Model':-^60}\u001b[0m")
         print(f"\u001b[1;33mModel:\u001b[0m\t{args.model}")
         print(f"\u001b[1;33mDevice:\u001b[0m\t{self.DEVICE}")
+        print(f"\u001b[1;33mOptimizer:\u001b[0m\t{self.optimizer}")
 
     def build_loss(self,model, optimizing_img, target_representations, content_feature_index_name, style_feature_maps_indices_names):
         target_content_representation = target_representations[0]
@@ -78,13 +79,13 @@ class NST:
         return tuning_step
 
 
-    def nst_image(self,model_name):
+    def nst_image(self):
         # content and style image load
         cimg=preprocess(self.content_img_path,args.height,self.DEVICE)
         simg=preprocess(self.style_img_path,args.height,self.DEVICE)
 
         # Model load
-        model=Load_model(model_name)()
+        model=Load_model(args.model)()
         model=model.to(self.DEVICE)
 
         # create combination image 
@@ -136,7 +137,7 @@ class NST:
             for i in range(num_iter[args.optimizer]):
                 total_loss,content_loss,style_loss,tv_loss=turning_step(optimizing_img)
                 with torch.no_grad():
-                    print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34miteration: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
                     save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
         elif args.optimizer=="lbfgs":
             # optimizer=LBFGS((optimizing_img),max_iter=num_iter[args.optimizer],line_search_fn="strong_wolfe")
@@ -152,13 +153,13 @@ class NST:
                 if total_loss.requires_grad:
                     total_loss.backward()
                 with torch.no_grad():
-                    print(f"\u001b[1;33mLBFGS\u001b[0m | \u001b[1;34miteration: \u001b[0m{idx:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
-                    save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,idx,num_iter[args.optimizer],self.out_img_name)
+                    print(f"\u001b[1;33mLBFGS\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{idx:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    save_maybe_display(optimizing_img,"./stats/output",args.saving_freq,idx,num_iter[args.optimizer],self.out_img_name)
                 idx+=1
                 return total_loss
             
             optimizer.step(clouser)
-        return f"./temp/img/{self.out_img_name}"
+        return f"./stats/output{self.out_img_name}"
     
     # def TEST(self):
     #     pass
@@ -186,13 +187,15 @@ def argument():
 if __name__=="__main__":
     args=argument()
 
-    if "temp" not in os.listdir(): os.makedirs("temp")
-    if "img" not in os.listdir("temp"): os.makedirs("./temp/img")
+    if "stats" not in os.listdir():
+        os.makedirs("stats")
+        os.makedirs("./stats/output")
+        # os.makedirs("./stats/losses")
 
     obj=NST(args)
     # obj.metadata()
     
-    obj.nst_image("vgg16")  
+    outfile_path=obj.nst_image()  
 
     # obj.TEST()
 

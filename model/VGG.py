@@ -50,7 +50,7 @@ class VGG19(nn.Module):
         super(VGG19,self).__init__()
         self.backbone=models.vgg19(pretrained=True,progress=show_progress).features                  # pretrained backbone of VGG19
         if use_relu:
-            self.layer_name=['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'conv4_2', 'relu5_1']
+            self.layer_names=['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'conv4_2', 'relu5_1']
             self.offset=1
         else:
             self.layer_name=['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv4_2', 'conv5_1']
