@@ -1,6 +1,7 @@
 import sys,os, argparse
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 import torch, torch.nn as nn
 from torch.optim import Adam, LBFGS
@@ -8,7 +9,7 @@ from torch.autograd import Variable
 import torchvision
 
 from model import * 
-from utils import preprocess, prepare_model, gram_matrix, total_variation, save_maybe_display
+from utils import preprocess, prepare_model, gram_matrix, total_variation, save_maybe_display, Graph
 
 class NST:
     def __init__(self,args):
@@ -37,7 +38,7 @@ class NST:
         print(f"\u001b[1;35m{'Metadata about Model':-^60}\u001b[0m")
         print(f"\u001b[1;33mModel:\u001b[0m\t{args.model}")
         print(f"\u001b[1;33mDevice:\u001b[0m\t{self.DEVICE}")
-        print(f"\u001b[1;33mOptimizer:\u001b[0m\t{self.optimizer}")
+        print(f"\u001b[1;33mOptimizer:\u001b[0m\t{args.optimizer}\n")
 
     def build_loss(self,model, optimizing_img, target_representations, content_feature_index_name, style_feature_maps_indices_names):
         target_content_representation = target_representations[0]
@@ -130,17 +131,21 @@ class NST:
 
         num_iter={"adam":3000,"lbfgs":1000}
         
+        # loss graph            ## add later
+        ######### graph=Graph(args)
+
         # ## optimizatino process start
         if args.optimizer=="adam":
             optimizer=Adam((optimizing_img,),lr=1e1)
             turning_step=self.make_turning_step(model,optimizer,target_representations,content_feature_maps_index_name[1],style_feature_maps_indices_name[1])
             for i in range(num_iter[args.optimizer]):
                 total_loss,content_loss,style_loss,tv_loss=turning_step(optimizing_img)
+                ########## graph.add_points(total_loss,content_loss,style_loss,tv_loss)
+
                 with torch.no_grad():
                     print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
                     save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
         elif args.optimizer=="lbfgs":
-            # optimizer=LBFGS((optimizing_img),max_iter=num_iter[args.optimizer],line_search_fn="strong_wolfe")
             optimizer = LBFGS([optimizing_img], max_iter=num_iter[args.optimizer], line_search_fn="strong_wolfe")
 
             idx=0
@@ -150,6 +155,8 @@ class NST:
                 if torch.is_grad_enabled():
                     optimizer.zero_grad()
                 total_loss, content_loss, style_loss, tv_loss = self.build_loss(model, optimizing_img, target_representations, content_feature_maps_index_name[1], style_feature_maps_indices_name[1])
+                ####### graph.add_points(total_loss,content_loss,style_loss,tv_loss)
+
                 if total_loss.requires_grad:
                     total_loss.backward()
                 with torch.no_grad():
@@ -159,6 +166,10 @@ class NST:
                 return total_loss
             
             optimizer.step(clouser)
+         
+        # plot graph
+        ############# Graph.plot_fig()
+
         return f"./stats/output{self.out_img_name}"
     
     # def TEST(self):
@@ -190,13 +201,10 @@ if __name__=="__main__":
     if "stats" not in os.listdir():
         os.makedirs("stats")
         os.makedirs("./stats/output")
-        # os.makedirs("./stats/losses")
+        os.makedirs("./stats/losses")
 
     obj=NST(args)
-    # obj.metadata()
+    obj.metadata()
     
-    outfile_path=obj.nst_image()  
-
-    # obj.TEST()
-
-    
+    outfile_path=obj.nst_image()
+    print(f"\u001b[1:32mOutput image path:\u001b[0m {outfile_path}")

@@ -106,3 +106,22 @@ if __name__=="__main__":
     T=torch.randn([1,3,64,64])
     G=gram_matrix(T)
     print(G.shape)
+
+'''----------------------------------------| Graph |----------------------------------------'''
+class Graph:
+    def __init__(self,args):
+        self.losses=[[],[],[],[]]
+        self.args=args
+    
+    def add_points(self,total_loss,content_loss,style_loss,tv_loss):
+        
+
+        self.losses[0].append(total_loss)
+        self.losses[1].append(content_loss)
+        self.losses[2].append(style_loss)
+        self.losses[3].append(tv_loss)
+    
+    def plot_fig(self):
+        plt.plot(self.losses[0])
+        plt.savefig(f"../stats/losses/{self.args.optimizer[0]+self.args.model[-2:]}_total_loss.png",dpi=300)
+        

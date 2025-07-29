@@ -53,11 +53,12 @@ class VGG19(nn.Module):
             self.layer_names=['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'conv4_2', 'relu5_1']
             self.offset=1
         else:
-            self.layer_name=['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv4_2', 'conv5_1']
+            self.layer_names=['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv4_2', 'conv5_1']
             self.offset=0
 
         self.content_feature_maps_index=4                                                              # feature map index for content images
         self.style_feature_maps_indices=list(range(6))                                                 # feature map index for style images
+        # self.style_feature_maps_indices.remove(4)
 
         # create slice node for extracting feature maps 
         self.slice_1=nn.Sequential()
@@ -78,7 +79,7 @@ class VGG19(nn.Module):
             self.slice_4.add_module(str(i),self.backbone[i])
         for i in range(20+self.offset,22):
             self.slice_5.add_module(str(i),self.backbone[i])
-        for i in range(22,29+self.offset):
+        for i in range(22,29++self.offset):
             self.slice_6.add_module(str(i),self.backbone[i])
 
         # freeze all layers
