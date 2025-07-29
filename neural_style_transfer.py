@@ -8,7 +8,7 @@ from torch.autograd import Variable
 import torchvision
 
 from model import * 
-from utils import preprocess, prepare_model, gram_matrix, total_variation
+from utils import preprocess, prepare_model, gram_matrix, total_variation, save_maybe_display
 
 class NST:
     def __init__(self,args):
@@ -137,11 +137,31 @@ class NST:
                 total_loss,content_loss,style_loss,tv_loss=turning_step(optimizing_img)
                 with torch.no_grad():
                     print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34miteration: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
-                    
+                    save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
+        elif args.optimizer=="lbfgs":
+            # optimizer=LBFGS((optimizing_img),max_iter=num_iter[args.optimizer],line_search_fn="strong_wolfe")
+            optimizer = LBFGS([optimizing_img], max_iter=num_iter[args.optimizer], line_search_fn="strong_wolfe")
 
-    def TEST(self):
-        
-        pass
+            idx=0
+
+            def clouser():
+                nonlocal idx
+                if torch.is_grad_enabled():
+                    optimizer.zero_grad()
+                total_loss, content_loss, style_loss, tv_loss = self.build_loss(model, optimizing_img, target_representations, content_feature_maps_index_name[1], style_feature_maps_indices_name[1])
+                if total_loss.requires_grad:
+                    total_loss.backward()
+                with torch.no_grad():
+                    print(f"\u001b[1;33mLBFGS\u001b[0m | \u001b[1;34miteration: \u001b[0m{idx:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,idx,num_iter[args.optimizer],self.out_img_name)
+                idx+=1
+                return total_loss
+            
+            optimizer.step(clouser)
+        return f"./temp/img/{self.out_img_name}"
+    
+    # def TEST(self):
+    #     pass
 
 
 def argument():
@@ -155,7 +175,7 @@ def argument():
     arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
     arg.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=1e0)
 
-    arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="adam")
+    arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")
     # arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")
     arg.add_argument("--model",type=str,default="vgg16",help="default model for NST")
     arg.add_argument("--init_method",type=str,choices=["random","content","style"],default="content",help="...")
@@ -167,6 +187,7 @@ if __name__=="__main__":
     args=argument()
 
     if "temp" not in os.listdir(): os.makedirs("temp")
+    if "img" not in os.listdir("temp"): os.makedirs("./temp/img")
 
     obj=NST(args)
     # obj.metadata()

@@ -1,6 +1,7 @@
 import sys,os
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 import torch, torch.nn as nn
 from torchvision import transforms
@@ -58,6 +59,20 @@ def get_uint8_range(x):
         return x
     else:
         raise ValueError(f'Expected numpy array got {type(x)}')
+
+def save_maybe_display(optimizing_img, dump_path, saving_freq, img_id, num_of_iterations,out_image_name=None, should_display=False,):
+    out_img=optimizing_img.squeeze(axis=0).to('cpu').detach().numpy()
+    out_img=np.moveaxis(out_img,0,2)
+    if img_id==num_of_iterations-1 or (saving_freq>0 and img_id%saving_freq==0):
+        out_img_name=f"{str(img_id).zfill(4)}.jpg" if saving_freq!=-1 else out_image_name
+        dump_img=np.copy(out_img)
+        dump_img+=np.array(IMAGENET_MEAN_255).reshape((1,1,3))
+        dump_img=np.clip(dump_img,0,255).astype('uint8')
+        cv2.imwrite(os.path.join(dump_path,out_img_name),dump_img[:,:,::-1])
+    
+    if should_display:
+        plt.imshow(np.uint8(get_uint8_range(out_img)))
+        plt.show()
 
 '''----------------------------------------| Model utils functions |----------------------------------------'''
 def prepare_model(model):
