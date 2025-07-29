@@ -207,4 +207,4 @@ if __name__=="__main__":
     obj.metadata()
     
     outfile_path=obj.nst_image()
-    print(f"\u001b[1:32mOutput image path:\u001b[0m {outfile_path}")
+    print(f"\u001b[1;32mOutput image path:\u001b[0m {outfile_path}")
