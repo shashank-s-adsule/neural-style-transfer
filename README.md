@@ -18,7 +18,7 @@ for refrence i have used some of images from these dataset
 
 
 
-# Process 
+# Process [add some images ]
 The models used for extracting features in this process are mostly VGG networks. In this process, we extract features from both the content as well as the style image.
 
 For the content image, features are extracted from the initial part of the network to maintain the structure and semantic integrity in the final output image.
@@ -43,14 +43,26 @@ Instead of updating the model weights, we optimize the pixels of the generated i
 in a Neural Network model generally a model is optimize to give best results but in this case rather than model the image is optimize to get desired output. to do so a noise image is introduce which is used as optimizing image when passed throu optimizer which then optimizes and converges to relvent final image
 
 the optimizer used in this repo are `Adam` and `L-BFGS`.
--  **Adam**:
--  **L-BFGS**:  
+-  **Adam**: it's a common optimizer used in neural network models. we can also use this for image optimization but the number of iteration required for optimization is comparatively greater than L-Bfgs. it is good for fast training but it's convergence rate is slower as compare to other 
+-  **L-BFGS**: it's a quasi-Newton method that uses second-order information leading to faster and more stable convergence. it requires fewer iterations to reach a high-quality result. also it's best for static optimization problem. where we are not training on baathc of data.
 
 # Run Code
 to Execute this code on local system use this command
 ```console
-python neural_style_transfer.py 
+python .\neural_style_transfer.py --c_image "Content Image Path" --s_image "Style Image Path" 
 ```
+this is the basic command for geting the stylised image. 
+if you want to change some parameter regarding optimization or model add this part in above command
+|parameter|command|Default value|
+|:-:|:-:|:-:|
+|image height|--height|400|
+|Content weight|--content_weight|100000.0|
+|Style weight|--style_weight|30000.0|
+|total variation weight|--tv_weight|10.0|
+|Optimizer|--optimizer|L-BFGS|
+|Model|--optimizer|L-BFGS|
+|optimzation image|--init_method|Content|
+|saving image at interval|--saving_freq|-1|
 
 # example
 

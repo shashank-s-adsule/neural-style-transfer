@@ -183,7 +183,7 @@ def argument():
     arg.add_argument("--height",type=int,default=400,help="height of the content and style image")
 
     arg.add_argument("--content_weight", type=float, help="weight factor for content loss", default=1e5)
-    arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=1e4)
+    arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
     arg.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=1e0)
 
     arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")
