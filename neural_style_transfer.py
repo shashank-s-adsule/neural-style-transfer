@@ -16,8 +16,7 @@ class NST:
         self.content_img_path=args.c_image
         self.style_img_path=args.s_image
         self.DEVICE="cuda" if torch.cuda.is_available() else "cpu"
-        # temp image
-        if "img" not in os.listdir("./temp"): os.makedirs("./temp/img")
+
         self.out_img_name=f"{args.optimizer[0]+args.model[-2:]}_{os.path.splitext(os.path.basename(self.content_img_path))[0]}_AND_{os.path.basename(self.style_img_path)}"
 
     def metadata(self):
@@ -144,7 +143,7 @@ class NST:
 
                 with torch.no_grad():
                     print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
-                    save_maybe_display(optimizing_img,"./temp/img",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
+                    save_maybe_display(optimizing_img,"./stats/output",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
         elif args.optimizer=="lbfgs":
             optimizer = LBFGS([optimizing_img], max_iter=num_iter[args.optimizer], line_search_fn="strong_wolfe")
 
@@ -170,7 +169,7 @@ class NST:
         # plot graph
         ############# Graph.plot_fig()
 
-        return f"./stats/output{self.out_img_name}"
+        return f"./stats/output/{self.out_img_name}"
     
     # def TEST(self):
     #     pass
@@ -179,12 +178,12 @@ class NST:
 def argument():
 
     arg=argparse.ArgumentParser()
-    arg.add_argument("--c_image",type=str,default=".\\data\\content\\TamilContentImages\\C_image2.jpg",help="path for content image")
-    arg.add_argument("--s_image",type=str,default=".\\data\\styles\\Artworks\\boat_sail_abstract.jpg",help="path for style image")
+    arg.add_argument("--c_image",type=str,default=r"./data/content/car.jpg",help="path for content image")
+    arg.add_argument("--s_image",type=str,default=r"./data/styles/Artworks//the_starry_night.jpg",help="path for style image")
     arg.add_argument("--height",type=int,default=400,help="height of the content and style image")
 
     arg.add_argument("--content_weight", type=float, help="weight factor for content loss", default=1e5)
-    arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
+    arg.add_argument("--style_weight", type=float, help="weight factor for style loss", default=1e4)
     arg.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=1e0)
 
     arg.add_argument("--optimizer",type=str,choices=["lbfgs","adam"],default="lbfgs")

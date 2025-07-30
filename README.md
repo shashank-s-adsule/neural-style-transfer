@@ -12,14 +12,18 @@ for refrence i have used some of images from these dataset
     - [Images for Style Transfer](https://www.kaggle.com/datasets/soumikrakshit/images-for-style-transfer)
     - [Images for Neural Style Transfer](https://www.kaggle.com/datasets/whale9490/images-from-nga-and-unsplash)
 
-
 # process [theory + gaausion image theory]
-
-# image preprocess [Complete]
+<!-- add image precrocess in this-->
 
 # Model [theory + arch]
 
 # optimizer [adam and lbfgs expain]
+
+# Run Code
+to Execute this code on local system use this command
+```console
+python neural_style_transfer.py 
+```
 
 # example
 
