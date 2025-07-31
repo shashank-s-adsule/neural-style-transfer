@@ -142,7 +142,7 @@ class NST:
                 ########## graph.add_points(total_loss,content_loss,style_loss,tv_loss)
 
                 with torch.no_grad():
-                    print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    print(f"\u001b[1;33mAdam\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{i:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mTv loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
                     save_maybe_display(optimizing_img,"./stats/output",args.saving_freq,i,num_iter[args.optimizer],self.out_img_name)
         elif args.optimizer=="lbfgs":
             optimizer = LBFGS([optimizing_img], max_iter=num_iter[args.optimizer], line_search_fn="strong_wolfe")
@@ -159,7 +159,7 @@ class NST:
                 if total_loss.requires_grad:
                     total_loss.backward()
                 with torch.no_grad():
-                    print(f"\u001b[1;33mLBFGS\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{idx:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
+                    print(f"\u001b[1;33mLBFGS\u001b[0m | \u001b[1;34mEpoch: \u001b[0m{idx:03} \u001b[1;31mTotal loss: \u001b[0m{total_loss.item():12.4f} \u001b[1;31mContent loss: \u001b[0m{args.content_weight*content_loss.item():12.4f} \u001b[1;31mStyle loss: \u001b[0m{args.style_weight*style_loss.item():12.4f} \u001b[1;31mTv loss: \u001b[0m{args.tv_weight*tv_loss.item():12.4f}")
                     save_maybe_display(optimizing_img,"./stats/output",args.saving_freq,idx,num_iter[args.optimizer],self.out_img_name)
                 idx+=1
                 return total_loss
@@ -179,7 +179,7 @@ def argument():
 
     arg=argparse.ArgumentParser()
     arg.add_argument("--c_image",type=str,default=r"./data/content/car.jpg",help="path for content image")
-    arg.add_argument("--s_image",type=str,default=r"./data/styles/Artworks//the_starry_night.jpg",help="path for style image")
+    arg.add_argument("--s_image",type=str,default=r"./data/styles/the_starry_night.jpg",help="path for style image")
     arg.add_argument("--height",type=int,default=400,help="height of the content and style image")
 
     arg.add_argument("--content_weight", type=float, help="weight factor for content loss", default=1e5)

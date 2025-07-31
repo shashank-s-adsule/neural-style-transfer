@@ -2,9 +2,12 @@
 Neural Style Transfer (NST) is a deep learning technique that blends the content of one image with the artistic style of another. this way we can impose color style, patterns, texture of style image on content image while keeping its original structure, composition, and semantics intact.
 this technique was first conceptualized by **Leon A. Gatys**, **Alexander S. Ecker** and **Matthias Bethge** in the paper [A Neural Algorithm of Artistic Style](https://arxiv.org/pdf/1508.06576).
 
-|![content](./data/content/C_image2.jpg)|![Style](./assests/img/boat_sail_abstract.jpg)|![final](./assests/out_images/l16_C_image2_AND_boat_sail_abstract.jpg)|
+<!-- |![content](./data/content/C_image2.jpg)|![Style](./assests/img/boat_sail_abstract.jpg)|![final](./assests/out_images/l16_C_image2_AND_boat_sail_abstract.jpg)|
+-->
+|<img src="./data/content/C_image2.jpg" alt="content" height=300px>|<img src="./data/styles/boat_sail_abstract.jpg" alt="style"  height=300px>|<img src="./assests/out_images/l16_C_image2_AND_boat_sail_abstract.jpg" alt="output"  height=300px>|
 |:-:|:-:|:-:|
 |Content image|Style image|Stylized Image|
+
 
 ## Dataset
 This model trains and inference at the same time so we can Load any **Content** or **Style** image to this Model.<br>
@@ -65,5 +68,18 @@ if you want to change some parameter regarding optimization or model add this pa
 |saving image at interval|--saving_freq|-1|
 
 # example
+<!-- |Content image| Style Image| output Image|
+|:-:|:-:|:-:|
+|![woman3.png](./data/content/women3.jpg)|![yellow grassfield](./data/styles/yellow_grassfield.jpg)|![output](./assests/out_images/l16_women3_AND_yellow_grassfield.jpg)| -->
 
-[reference github link](https://github.com/gordicaleksa/pytorch-neural-style-transfer)
+<!-- example 1 -->
+<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>
+<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>
+<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>
+<!-- example 2 -->
+<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>
+<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>
+<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>
+
+
+<!-- [reference github link](https://github.com/gordicaleksa/pytorch-neural-style-transfer) -->
