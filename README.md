@@ -73,13 +73,14 @@ if you want to change some parameter regarding optimization or model add this pa
 |![woman3.png](./data/content/women3.jpg)|![yellow grassfield](./data/styles/yellow_grassfield.jpg)|![output](./assests/out_images/l16_women3_AND_yellow_grassfield.jpg)| -->
 
 <!-- example 1 -->
-<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>
-<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>
-<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>
 <!-- example 2 -->
-<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>
-<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>
-<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>
+<!-- example 4 -->
+
+|Content image|Style image|Stylized Image|
+|:-:|:-:|:-:|
+|<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>|<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>|<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>|
+|<img src="./assests/img/friends.png" alt="content" height=200px width=200px>|<img src="./data/styles/mosaic.png" alt="style"  height=200px width=400px>|<img src="./assests/out_images/group_mosaic_o_lbfgs_i_content_h_400_m_vgg19_cw_100000.0_sw_30000.0_tv_1.0.jpg" alt="output"  height=200px width=200px> <br>|
+|<img src="./data/content/Lion.jpeg" alt="content" height=200px width=200px>|<img src="./data/styles/the_starry_night.jpg" alt="style"  height=200px width=400px>|<img src="./assests/out_images/lion_vg_starry_night_o_lbfgs_i_content_h_400_m_vgg19_cw_100000.0_sw_30000.0_tv_1.0.jpg" alt="output"  height=200px width=200px> <br>|
 
 
 <!-- [reference github link](https://github.com/gordicaleksa/pytorch-neural-style-transfer) -->
