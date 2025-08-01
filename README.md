@@ -19,9 +19,7 @@ for refrence i have used some of images from these dataset
     - [Images for Style Transfer](https://www.kaggle.com/datasets/soumikrakshit/images-for-style-transfer)
     - [Images for Neural Style Transfer](https://www.kaggle.com/datasets/whale9490/images-from-nga-and-unsplash)
 
-
-
-# Process [add some images ]
+# Process
 The models used for extracting features in this process are mostly VGG networks. In this process, we extract features from both the content as well as the style image.
 
 For the content image, features are extracted from the initial part of the network to maintain the structure and semantic integrity in the final output image.
@@ -40,6 +38,7 @@ The total loss is a weighted combination of the content and style losses:<br>
 
 Instead of updating the model weights, we optimize the pixels of the generated image using gradient descent to minimize this total loss. Over several iterations, the generated image gradually evolves to preserve the content structure of the content image while adopting the style patterns of the style image.
 
+>[!Note]\
 > This is how Neural Style Transfer generates a visually compelling output by combining the best of both worlds — content and style — using deep learning.
 
 # Optimization 
@@ -68,19 +67,8 @@ if you want to change some parameter regarding optimization or model add this pa
 |saving image at interval|--saving_freq|-1|
 
 # example
-<!-- |Content image| Style Image| output Image|
-|:-:|:-:|:-:|
-|![woman3.png](./data/content/women3.jpg)|![yellow grassfield](./data/styles/yellow_grassfield.jpg)|![output](./assests/out_images/l16_women3_AND_yellow_grassfield.jpg)| -->
-
-<!-- example 1 -->
-<!-- example 2 -->
-<!-- example 4 -->
-
 |Content image|Style image|Stylized Image|
 |:-:|:-:|:-:|
 |<img src="./data/content/women3.jpg" alt="content" height=300px width=200px>|<img src="./data/styles/yellow_grassfield.jpg" alt="style"  height=300px width=400px>|<img src="./assests/out_images/l16_women3_AND_yellow_grassfield.jpg" alt="output"  height=300px width=200px> <br>|
 |<img src="./assests/img/friends.png" alt="content" height=200px width=200px>|<img src="./data/styles/mosaic.png" alt="style"  height=200px width=400px>|<img src="./assests/out_images/group_mosaic_o_lbfgs_i_content_h_400_m_vgg19_cw_100000.0_sw_30000.0_tv_1.0.jpg" alt="output"  height=200px width=200px> <br>|
 |<img src="./data/content/Lion.jpeg" alt="content" height=200px width=200px>|<img src="./data/styles/the_starry_night.jpg" alt="style"  height=200px width=400px>|<img src="./assests/out_images/lion_vg_starry_night_o_lbfgs_i_content_h_400_m_vgg19_cw_100000.0_sw_30000.0_tv_1.0.jpg" alt="output"  height=200px width=200px> <br>|
-
-
-<!-- [reference github link](https://github.com/gordicaleksa/pytorch-neural-style-transfer) -->
