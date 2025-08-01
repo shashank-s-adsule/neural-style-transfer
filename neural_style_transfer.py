@@ -37,7 +37,7 @@ class NST:
         print(f"\u001b[1;35m{'Metadata about Model':-^60}\u001b[0m")
         print(f"\u001b[1;33mModel:\u001b[0m\t{args.model}")
         print(f"\u001b[1;33mDevice:\u001b[0m\t{self.DEVICE}")
-        print(f"\u001b[1;33mOptimizer:\u001b[0m\t{args.optimizer}\n")
+        print(f"\u001b[1;33mOptimizer:\u001b[0m\t{args.optimizer}\n\n")
 
     def build_loss(self,model, optimizing_img, target_representations, content_feature_index_name, style_feature_maps_indices_names):
         target_content_representation = target_representations[0]
@@ -170,10 +170,6 @@ class NST:
         ############# Graph.plot_fig()
 
         return f"./stats/output/{self.out_img_name}"
-    
-    # def TEST(self):
-    #     pass
-
 
 def argument():
 

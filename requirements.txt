@@ -1,0 +1,9 @@
+numpy 
+matplotlib
+opencv-python
+
+### pytorch (CUDA version)
+# torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+
+### pytorch (CPU version)
+# torch torchvision torchaudio
